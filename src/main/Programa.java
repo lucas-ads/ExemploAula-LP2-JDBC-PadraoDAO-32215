@@ -31,9 +31,11 @@ public class Programa {
 					break;
 				}
 				case 2: {
+					atualizarTarefa();
 					break;
 				}
 				case 3: {
+					excluirTarefa();
 					break;
 				}
 				case 4: {
@@ -81,6 +83,68 @@ public class Programa {
 		daoTarefa.cadastrar(t);
 		
 		System.out.println("ID da nova tarefa: " + t.getId());
+	}
+	
+	public static void atualizarTarefa() throws SQLException{
+		System.out.println("##### Atualização de Tarefa #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o ID:");
+		
+		int id = Integer.parseInt(scanner.nextLine());
+		
+		Tarefa t = daoTarefa.buscarTarefa(id);
+		
+		if(t != null) {
+			System.out.println("Descrição atual: " + t.getDescricao());
+			System.out.println("Digite uma nova descrição ou pressione enter: ");
+			
+			String desc = scanner.nextLine();
+			
+			if(desc.length() > 0) {
+				t.setDescricao(desc);
+			}
+			
+			//############
+			
+			System.out.println("Prioridade atual: " + t.getPrioridade());
+			System.out.println("Digite uma nova prioridade ou pressione enter: ");
+			
+			String prioridade = scanner.nextLine();
+			
+			if(prioridade.length() > 0) {
+				t.setPrioridade( Integer.parseInt(prioridade) );
+			}
+			
+			if(daoTarefa.atualizar(t)) {
+				System.out.println("Tarefa atualizada com sucesso!");
+			}else {
+				System.out.println("Erro ao atualizar...");
+			}
+		}else {
+			System.out.println("Tarefa não existe...");
+		}
+	}
+	
+	public static void excluirTarefa() throws SQLException {
+		System.out.println("##### Exclusão de Tarefa #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o ID:");
+		
+		int id = Integer.parseInt(scanner.nextLine());
+		
+		int retorno=daoTarefa.excluirTarefa(id);
+		
+		if(retorno == 1) {
+			System.out.println("Tarefa excluída!");
+		}else if(retorno == 0) {
+			System.out.println("Tarefa não existe...");
+		}else {
+			System.out.println("Erro ao excluir, tente novamente mais tarde...");
+		}
 	}
 	
 	public static void buscarTarefa() throws SQLException {
