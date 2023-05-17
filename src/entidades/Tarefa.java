@@ -4,14 +4,16 @@ public class Tarefa {
 	private int id;
 	private String descricao;
 	private int prioridade;
+	private Usuario usuario;
 	
 	public Tarefa() {}
 	
-	public Tarefa(int id, String descricao, int prioridade) {
+	public Tarefa(int id, String descricao, int prioridade, Usuario usuario) {
 		super();
 		this.id = id;
 		this.descricao = descricao;
 		this.prioridade = prioridade;
+		this.usuario = usuario;
 	}
 
 	public int getId() {
@@ -36,5 +38,13 @@ public class Tarefa {
 	
 	public void setPrioridade(int prioridade) {
 		this.prioridade = prioridade;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 }

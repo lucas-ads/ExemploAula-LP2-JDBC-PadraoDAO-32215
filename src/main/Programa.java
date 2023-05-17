@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import dao.DaoTarefa;
+import dao.DaoUsuario;
 import entidades.Tarefa;
+import entidades.Usuario;
 
 public class Programa {
 	
 	private static DaoTarefa daoTarefa = new DaoTarefa();
+	private static DaoUsuario daoUsuario = new DaoUsuario();	
 	
 	public static void main(String[] args) throws SQLException {
 		
@@ -46,6 +49,34 @@ public class Programa {
 					listarTarefas();
 					break;
 				}
+				case 6: {
+					cadastrarUsuario();
+					break;
+				}
+				case 7: {
+					atualizarDadosUsuario();
+					break;
+				}
+				case 8: {
+					atualizarSenhaUsuario();
+					break;
+				}
+				case 9: {
+					excluirUsuario();
+					break;
+				}
+				case 10: {
+					buscarUsuarioPorId();
+					break;
+				}
+				case 11: {
+					buscarUsuarioPorEmail();
+					break;
+				}
+				case 12: {
+					listarUsuarios();
+					break;
+				}
 				case 0: {
 					System.out.println("Bye...");
 					break;
@@ -64,6 +95,16 @@ public class Programa {
 		System.out.println("3 - Para excluir tarefa");
 		System.out.println("4 - Para buscar tarefa");
 		System.out.println("5 - Para listar tarefas");
+		
+		System.out.println("6 - Para cadastrar Usuario");
+		System.out.println("7 - Para atualizar dados do Usuário");
+		System.out.println("8 - Para atualizar senha do Usuário");
+		System.out.println("9 - Para excluir Usuario");
+		System.out.println("10 - Para buscar Usuario por ID");
+		System.out.println("11 - Para buscar Usuario por Email");
+		System.out.println("12 - Para listar Usuarios");
+		
+		
 		System.out.println("0 - Sair");
 	}
 
@@ -182,40 +223,159 @@ public class Programa {
 		}
 	}
 	
+	public static void cadastrarUsuario() throws SQLException{
+		System.out.println("##### Cadastrando Usuário #####");
+		
+		Usuario usuario = new Usuario();
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o e-mail:");
+		usuario.setEmail( scanner.nextLine() );
+		
+		System.out.println("Digite sua senha:");
+		usuario.setSenha( scanner.nextLine() );
+		
+		daoUsuario.cadastrar(usuario);
+		
+		System.out.println("ID do novo usuário: " + usuario.getId());
+	}
+
+	public static void atualizarDadosUsuario() throws SQLException{
+		System.out.println("##### Atualização de Usuário #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o ID:");
+		
+		int id = Integer.parseInt(scanner.nextLine());
+		
+		Usuario u = daoUsuario.buscarPorId(id);
+		
+		if(u != null) {
+			System.out.println("Email atual: " + u.getEmail());
+			System.out.println("Digite um novo email: ");
+			
+			String email = scanner.nextLine();
+			
+			if(email.length() > 0) {
+				u.setEmail(email);
+				if(daoUsuario.atualizarDados(u))
+					System.out.println("Usuário atualizado com sucesso!");
+				else
+					System.out.println("Erro ao atualizar!");
+			}else {
+				System.out.println("Operação cancelada...");
+			}
+		}else {
+			System.out.println("Usuário não existe...");
+		}
+	}
+
+	public static void atualizarSenhaUsuario() throws SQLException{
+		System.out.println("##### Atualização de Senha #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o ID:");
+		
+		int id = Integer.parseInt(scanner.nextLine());
+		
+		Usuario u = daoUsuario.buscarPorId(id);
+		
+		if(u != null) {
+			System.out.println("Digite uma nova senha ou pressione enter para cancelar: ");
+			
+			String senha = scanner.nextLine();
+			
+			if(senha.length() > 0) {
+				u.setSenha(senha);
+				if(daoUsuario.atualizarSenha(u)) {
+					System.out.println("Usuário atualizado com sucesso!");
+				}else {
+					System.out.println("Erro ao atualizar...");
+				}
+			}else {
+				System.out.println("Operação cancelada...");
+			}
+			
+		}else {
+			System.out.println("Usuário não existe...");
+		}
+	}
+	
+	public static void excluirUsuario() throws SQLException{
+		System.out.println("##### Exclusão de Usuário #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o ID:");
+		
+		int id = Integer.parseInt(scanner.nextLine());
+		
+		int retorno=daoUsuario.excluir(id);
+		
+		if(retorno == 1) {
+			System.out.println("Usuário excluído!");
+		}else if(retorno == 0) {
+			System.out.println("Usuário não existe...");
+		}else {
+			System.out.println("Erro ao excluir, tente novamente mais tarde...");
+		}
+	}
+
+	public static void buscarUsuarioPorId() throws SQLException{
+		System.out.println("##### Buscando Usuário por ID #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o ID:");
+		
+		int id = Integer.parseInt(scanner.nextLine());
+		
+		Usuario usuario = daoUsuario.buscarPorId(id);
+		
+		if(usuario != null) {
+			System.out.println("ID: " + usuario.getId());
+			System.out.println("Email: " + usuario.getEmail());
+			System.out.println("Senha: " + usuario.getSenha() + "\n");
+		}else {
+			System.out.println("Não existe um usuário com este ID...");
+		}
+	}
+
+	public static void buscarUsuarioPorEmail() throws SQLException{
+		System.out.println("##### Buscando Usuário por Email #####");
+		
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Digite o E-mail:");
+		
+		String email = scanner.nextLine();
+		
+		Usuario usuario = daoUsuario.buscarPorEmail(email);
+		
+		if(usuario != null) {
+			System.out.println("ID: " + usuario.getId());
+			System.out.println("Email: " + usuario.getEmail());
+			System.out.println("Senha: " + usuario.getSenha() + "\n");
+		}else {
+			System.out.println("Não existe um usuário com este ID...");
+		}
+	}
+
+	public static void listarUsuarios() throws SQLException{
+		System.out.println("##### Exibindo Usuários #####");
+		
+		List<Usuario> usuarios = daoUsuario.buscarUsuarios();
+		
+		for(int i=0; i < usuarios.size(); i++) {
+			Usuario u = usuarios.get(i);
+			
+			System.out.println("ID: " + u.getId());
+			System.out.println("Email: " + u.getEmail());
+			System.out.println("Senha: " + u.getSenha() + "\n");
+		}
+	}
 
 }
-
-
-
-/*Scanner scanner = new Scanner(System.in);
-
-/*String sql = "delete from tarefas where prioridade = ?";
-
-PreparedStatement ps = conexao.prepareStatement(sql);
-ps.setInt(1, 5);
-
-System.out.println("Affected rows:" + ps.executeUpdate());*/
-
-/*String sql = "select * from tarefas";
-PreparedStatement ps = conexao.prepareStatement(sql);
-
-ResultSet result = ps.executeQuery();
-
-while( result.next() ) {
-	int id = result.getInt("id");
-	String desc = result.getString("descricao");
-	int prioridade = result.getInt("prioridade");
-	
-	System.out.println("Tarefa #"+id);
-	System.out.println("Descrição: "+desc);
-	System.out.println("Prioridade: "+prioridade+"\n");
-}*/
-
-/*String sql = "update tarefas set prioridade = ? where prioridade >= ?";
-
-PreparedStatement ps = conexao.prepareStatement(sql);
-ps.setInt(1, 5);
-ps.setInt(2, 5);
-
-System.out.println("Affected rows:" + ps.executeUpdate());
-*/

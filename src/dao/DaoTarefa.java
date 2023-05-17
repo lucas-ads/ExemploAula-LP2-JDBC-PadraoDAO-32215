@@ -12,25 +12,16 @@ import entidades.Tarefa;
 
 public class DaoTarefa {
 	
-	public Connection getConexao() throws SQLException {
-		String dbURL = "jdbc:mysql://localhost:3306/tasksdb32215";
-		String username = "root";
-		String password = "";
-		
-		Connection conexao = DriverManager.getConnection(dbURL, username, password);
-		
-		return conexao;
-	}
-	
 	public void cadastrar(Tarefa tarefa) throws SQLException {
 		
-		Connection conexao = this.getConexao();
+		Connection conexao = ConnectionFactory.getConexao();
 		
-		String sql = "insert into tarefas (descricao, prioridade) values (? , ?)";
+		String sql = "insert into tarefas (descricao, prioridade, usuario_id) values (? , ? , ?)";
 		
 		PreparedStatement ps = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 		ps.setString(1, tarefa.getDescricao() );
 		ps.setInt(2, tarefa.getPrioridade() );
+		ps.setInt(3, tarefa.getUsuario().getId() );
 		
 		ps.executeUpdate();
 		
@@ -41,7 +32,7 @@ public class DaoTarefa {
 	}
 	
 	public boolean atualizar(Tarefa tarefa) throws SQLException{
-		Connection conexao = this.getConexao();
+		Connection conexao = ConnectionFactory.getConexao();
 		
 		String sql = "update tarefas set descricao = ?, prioridade = ? where id = ?";
 		
@@ -57,7 +48,7 @@ public class DaoTarefa {
 	}
 	
 	public int excluirTarefa(int id) throws SQLException{
-		Connection conexao = this.getConexao();
+		Connection conexao = ConnectionFactory.getConexao();
 		
 		String sql = "delete from tarefas where id = ?";
 		
@@ -79,7 +70,7 @@ public class DaoTarefa {
 	}
 	
 	public Tarefa buscarTarefa(int idBuscado) throws SQLException{
-		Connection conexao = this.getConexao();
+		Connection conexao = ConnectionFactory.getConexao();
 		
 		String sql = "select * from tarefas where id = ?";
 		
@@ -92,15 +83,20 @@ public class DaoTarefa {
 			int id = result.getInt("id");
 			String desc = result.getString("descricao");
 			int prioridade = result.getInt("prioridade");
+			int usuarioId = result.getInt("usuario_id");
 			
-			return new Tarefa(id, desc, prioridade);
+			DaoUsuario du = new DaoUsuario();
+			
+			Usuario u = du.
+			
+			return new Tarefa(id, desc, prioridade, );
 		}
 		
 		return null;
 	}
 	
 	public List<Tarefa> buscarTarefas() throws SQLException{
-		Connection conexao = this.getConexao();
+		Connection conexao = ConnectionFactory.getConexao();
 		String sql = "select * from tarefas";
 		PreparedStatement ps = conexao.prepareStatement(sql);
 		ResultSet resultSet = ps.executeQuery();
