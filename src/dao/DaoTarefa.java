@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entidades.Tarefa;
+import entidades.Usuario;
 
 public class DaoTarefa {
 	
@@ -87,9 +88,9 @@ public class DaoTarefa {
 			
 			DaoUsuario du = new DaoUsuario();
 			
-			Usuario u = du.
+			Usuario u = du.buscarPorId(usuarioId);
 			
-			return new Tarefa(id, desc, prioridade, );
+			return new Tarefa(id, desc, prioridade, u);
 		}
 		
 		return null;
@@ -107,8 +108,13 @@ public class DaoTarefa {
 			int id = resultSet.getInt("id");
 			String desc = resultSet.getString("descricao");
 			int prioridade = resultSet.getInt("prioridade");
+			int usuarioId = resultSet.getInt("usuario_id");
 			
-			Tarefa tarefa = new Tarefa(id, desc, prioridade);
+			DaoUsuario du = new DaoUsuario();
+			
+			Usuario u = du.buscarPorId(usuarioId);
+			
+			Tarefa tarefa = new Tarefa(id, desc, prioridade, u);
 			
 			tarefas.add(tarefa);
 		}
